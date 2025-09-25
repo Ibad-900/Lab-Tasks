@@ -1,0 +1,28 @@
+#include <iostream>
+using namespace std;
+
+int main() {
+	int qE, qL, qC;
+	float pE = 30;
+	float pL = 40;
+	float pC = 50;
+	float *ePrice = &pE;
+	float *lPrice = &pL;
+	float *cPrice = &pC;
+	cout<<"Enter Espresso quantity: ";
+	cin>>qE;
+	cout<<"Enter Latte quantity: ";
+	cin>>qL;
+	cout<<"Enter Cappuccino quantity: ";
+	cin>>qC;
+	int *eQuantity = &qE;
+	int *lQuantity = &qL;
+	int *cQuantity = &qC;
+	cout<<"\n--- Cafe Bill ---";
+	cout<<"\nEspresso (" <<*eQuantity<< " x " <<*ePrice<< ") = " <<*eQuantity * *ePrice;
+	cout<<"\nLatte (" <<*lQuantity<< " x " <<*lPrice<< ") = " <<*lQuantity * *lPrice;
+	cout<<"\nCappuccino (" <<*cQuantity<< " x " <<*cPrice<< ") = " <<*cQuantity * *cPrice;
+	cout<<"\n--------";
+	float bill = (*eQuantity * *ePrice)+(*lQuantity * *lPrice)+(*cQuantity * *cPrice);
+	cout<<"\nTOTAL BILL: "<<bill;
+}
