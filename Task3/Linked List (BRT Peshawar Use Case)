@@ -1,0 +1,119 @@
+#include <iostream>
+using namespace std;
+
+struct Node {
+    int data;
+    Node* next;
+    Node(int d) : data(d), next(nullptr) {}
+};
+
+class LinkedList {
+private:
+    Node* head;
+
+public:
+    LinkedList() : head(nullptr) {}
+
+    ~LinkedList() {
+        Node* current = head;
+        while (current != nullptr) {
+            Node* temp = current;
+            current = current->next;
+            delete temp;
+        }
+    }
+
+    void insertAtBeginning(int value) {
+        Node* newNode = new Node(value);
+        newNode->next = head;
+        head = newNode;
+    }
+
+    void insertAtEnd(int value) {
+        Node* newNode = new Node(value);
+        if (head == nullptr) {
+            head = newNode;
+            return;
+        }
+        Node* current = head;
+        while (current->next != nullptr) {
+            current = current->next;
+        }
+        current->next = newNode;
+    }
+
+    void insertAtPosition(int value, int pos) {
+        if (pos <= 1 || head == nullptr) {
+            insertAtBeginning(value);
+            return;
+        }
+
+        Node* newNode = new Node(value);
+        Node* current = head;
+        int count = 1;
+
+        while (current->next != nullptr && count < pos - 1) {
+            current = current->next;
+            count++;
+        }
+
+        newNode->next = current->next;
+        current->next = newNode;
+    }
+
+    bool deleteFromBeginning(int* removedValue = nullptr) {
+        if (head == nullptr) {
+            cout << "Queue is empty.\n";
+            return false;
+        }
+        Node* temp = head;
+        if (removedValue != nullptr) {
+            *removedValue = head->data;
+        }
+        head = head->next;
+        delete temp;
+        return true;
+    }
+
+    void display() const {
+        if (head == nullptr) {
+            cout << "Queue is empty.\n";
+            return;
+        }
+        Node* current = head;
+        while (current != nullptr) {
+            cout << current->data;
+            if (current->next != nullptr) {
+                cout << " -> ";
+            }
+            current = current->next;
+        }
+        cout << endl;
+    }
+};
+
+int main() {
+    LinkedList list;
+
+    // Step 1: Add 3 passengers at the end
+    list.insertAtEnd(101);
+    list.insertAtEnd(102);
+    list.insertAtEnd(103);
+    cout << "Initial Queue after adding passengers:\n";
+    list.display();
+
+    list.insertAtBeginning(999);
+    cout << "After adding an emergency passenger at beginning:\n";
+    list.display();
+
+    list.insertAtPosition(555, 3);
+    cout << "After inserting special booking passenger at position 2:\n";
+    list.display();
+
+    int removed;
+    list.deleteFromBeginning(&removed);
+    cout << "After first passenger boards (deletion):\n";
+    list.display();
+
+    return 0;
+}
