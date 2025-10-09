@@ -1,0 +1,156 @@
+#include <iostream>
+#include <string>
+using namespace std;
+
+struct Node {
+    string name;
+    int id;
+    Node* next;
+};
+
+class Queue {
+private:
+    Node* front;
+    Node* rear;
+    int total;
+
+public:
+    Queue() {
+        front = nullptr;
+        rear = nullptr;
+        total = 0;
+    }
+
+    void addStudent() {
+        Node* newNode = new Node;
+        cout << "Enter student's name: ";
+        cin.ignore();
+        getline(cin, newNode->name);
+        cout << "Enter student's ID: ";
+        cin >> newNode->id;
+        newNode->next = nullptr;
+
+        if (rear == nullptr) {
+            front = rear = newNode;
+        } else {
+            rear->next = newNode;
+            rear = newNode;
+        }
+        total++;
+        cout << newNode->name << " has been added to the queue.\n";
+    }
+
+    void serveStudent() {
+        if (front == nullptr) {
+            cout << "No student in queue to serve.\n";
+            return;
+        }
+        Node* temp = front;
+        cout << temp->name << " has been served and removed from the queue.\n";
+        front = front->next;
+        if (front == nullptr)
+            rear = nullptr;
+        delete temp;
+        total--;
+    }
+
+    void studentLeaves() {
+        if (front == nullptr) {
+            cout << "Queue is empty.\n";
+            return;
+        }
+
+        int id;
+        cout << "Enter student ID who wants to leave: ";
+        cin >> id;
+
+        Node* temp = front;
+        Node* prev = nullptr;
+
+        while (temp != nullptr && temp->id != id) {
+            prev = temp;
+            temp = temp->next;
+        }
+
+        if (temp == nullptr) {
+            cout << "No student found with ID " << id << ".\n";
+            return;
+        }
+
+        if (temp == front) {
+            front = front->next;
+            if (front == nullptr)
+                rear = nullptr;
+        } else {
+            prev->next = temp->next;
+            if (temp == rear)
+                rear = prev;
+        }
+
+        cout << temp->name << " (ID: " << temp->id << ") has left the queue.\n";
+        delete temp;
+        total--;
+    }
+
+    void showQueue() {
+        if (front == nullptr) {
+            cout << "Queue is empty.\n";
+            return;
+        }
+
+        cout << "\n--- Students currently in queue ---\n";
+        Node* temp = front;
+        while (temp != nullptr) {
+            cout << "Name: " << temp->name << " | ID: " << temp->id << endl;
+            temp = temp->next;
+        }
+    }
+
+    void countStudents() {
+        cout << "Total students in queue: " << total << endl;
+    }
+};
+
+int main() {
+    Queue q;
+    int choice;
+
+    do {
+        cout << "\n===== Code-a-Thon T-Shirt Queue Menu =====\n";
+        cout << "1. Add Student to Queue\n";
+        cout << "2. Serve Student from Front\n";
+        cout << "3. A Student Leaves\n";
+        cout << "4. Display Queue\n";
+        cout << "5. Count Students in Queue\n";
+        cout << "0. Exit\n";
+        cout << "==========================================\n";
+        cout << "Enter your choice: ";
+        cin >> choice;
+
+        switch (choice) {
+            case 1:
+                q.addStudent();
+                break;
+            case 2:
+                q.serveStudent();
+                break;
+            case 3:
+                q.studentLeaves();
+                break;
+            case 4:
+                q.showQueue();
+                break;
+            case 5:
+                q.countStudents();
+                break;
+            case 0:
+                cout << "Goodbye!\n";
+                break;
+            default:
+                cout << "Invalid choice. Try again.\n";
+        }
+
+    } while (choice != 0);
+
+    return 0;
+}
