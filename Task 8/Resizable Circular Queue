@@ -55,19 +55,18 @@ public:
         currentSize++;
     }
 
-    void dequeue() {
+	void dequeue() {
         if (isEmpty()) {
             cout << "Queue underflow! Cannot dequeue from an empty queue.\n";
             return;
         }
-
         frontIdx = (frontIdx + 1) % capacity;
         currentSize--;
     }
 
     int front() const {
         if (isEmpty()) {
-            cout << "Queue underflow! Cannot dequeue from an empty queue.\n";
+            cout << "Queue is empty! No front element.\n";
             return -1;
         }
         return arr[frontIdx];
@@ -114,7 +113,6 @@ int main() {
         q.dequeue();
     }
 
-    // Try dequeuing from empty queue (to show underflow handling)
     q.dequeue();
 
     return 0;
