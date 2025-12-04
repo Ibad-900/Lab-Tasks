@@ -1,0 +1,84 @@
+#include <iostream>
+#include <algorithm>
+
+using namespace std;
+
+const int FULL_SUPPLY = 100;
+const int MAGAZINE_LIMIT = 20;
+const int UNIT_TIME = 1;
+
+int simulate_gun_usage() {
+    int ammo_supply = FULL_SUPPLY;
+    int weapon_load = 0;
+    int elapsed_time = 0;
+    int cycle_index = 0;
+
+    cout << "--- Ammunition Usage Simulation ---\n";
+    cout << "Initial: Supply=" << ammo_supply 
+         << ", Weapon=" << weapon_load << ", Time=" << elapsed_time << "s\n";
+    cout << "-----------------------------------\n";
+
+    while (ammo_supply > 0) {
+        cycle_index++;
+        int load_amount = 0;
+        int load_duration = 0;
+        int fire_duration = 0;
+
+        load_amount = min(MAGAZINE_LIMIT, ammo_supply);
+        load_duration = load_amount * UNIT_TIME;
+        
+        ammo_supply -= load_amount;
+        weapon_load += load_amount;
+        elapsed_time += load_duration;
+
+        cout << "Cycle " << cycle_index << " - Load:\n";
+        cout << "  Loaded: " << load_amount << " (" 
+             << load_duration << "s)\n";
+        cout << "  State: Supply=" << ammo_supply 
+             << ", Weapon=" << weapon_load 
+             << ", Time=" << elapsed_time << "s\n";
+
+        int fire_amount = weapon_load;
+        fire_duration = fire_amount * UNIT_TIME;
+        
+        weapon_load -= fire_amount;
+        elapsed_time += fire_duration;
+
+        cout << "Cycle " << cycle_index << " - Fire:\n";
+        cout << "  Fired: " << fire_amount << " (" 
+             << fire_duration << "s)\n";
+        cout << "  State: Supply=" << ammo_supply 
+             << ", Weapon=" << weapon_load 
+             << ", Time=" << elapsed_time << "s\n";
+
+        cout << "-----------------------------------\n";
+    }
+    
+    if (weapon_load > 0) {
+         int fire_amount = weapon_load;
+         int fire_duration = fire_amount * UNIT_TIME;
+         
+         weapon_load = 0;
+         elapsed_time += fire_duration;
+         
+         cout << "Final Fire:\n";
+         cout << "  Fired Remaining: " << fire_amount << " (" 
+              << fire_duration << "s)\n";
+         cout << "  Final State: Supply=" << ammo_supply 
+              << ", Weapon=" << weapon_load 
+              << ", Time=" << elapsed_time << "s\n";
+         cout << "-----------------------------------\n";
+    }
+
+    return elapsed_time;
+}
+
+int main() {
+    int final_time = simulate_gun_usage();
+    
+    cout << "\n\n<<< RESULT >>>\n";
+    cout << "Total time elapsed to use 100 rounds: " << final_time << " seconds.\n";
+    cout << "<<< END OF SIMULATION >>>\n";
+
+    return 0;
+}
