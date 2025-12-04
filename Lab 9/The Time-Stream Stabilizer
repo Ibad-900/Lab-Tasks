@@ -1,0 +1,203 @@
+#include <iostream>
+#include <string>
+#include <algorithm>
+#include <limits>
+
+using namespace std;
+
+struct Node {
+    int year;
+    string eventName;
+    Node* left;
+    Node* right;
+
+    Node(int y, const string& name) :
+        year(y), eventName(name), left(nullptr), right(nullptr) {}
+};
+
+class TimelineBST {
+private:
+    Node* root;
+
+    Node* insert(Node* node, int year, const string& name) {
+        if (node == nullptr) {
+            cout << "\n> System: Injecting " << year << "... Timeline stable.";
+            return new Node(year, name);
+        }
+
+        if (year < node->year) {
+            node->left = insert(node->left, year, name);
+        } else if (year > node->year) {
+            node->right = insert(node->right, year, name);
+        } else {
+            cout << "> Alert: Year " << year << " already exists. Injection aborted." << endl;
+            return node;
+        }
+
+        return node;
+    }
+
+    Node* searchHelper(Node* node, int year) const {
+        if (node == nullptr || node->year == year) {
+            return node;
+        }
+
+        if (year < node->year) {
+            return searchHelper(node->left, year);
+        } else {
+            return searchHelper(node->right, year);
+        }
+    }
+
+    Node* findMin(Node* node) {
+        Node* current = node;
+        while (current && current->left != nullptr) {
+            current = current->left;
+        }
+        return current;
+    }
+
+    Node* removeNode(Node* root, int year) {
+        if (root == nullptr) {
+            cout << "> Alert: Year " << year << " not found. No paradox to resolve." << endl;
+            return root;
+        }
+
+        if (year < root->year) {
+            root->left = removeNode(root->left, year);
+        } else if (year > root->year) {
+            root->right = removeNode(root->right, year);
+        } else {
+            if (root->left == nullptr) {
+                Node* temp = root->right;
+                delete root;
+                return temp;
+            } else if (root->right == nullptr) {
+                Node* temp = root->left;
+                delete root;
+                return temp;
+            }
+
+            Node* temp = findMin(root->right);
+
+            root->year = temp->year;
+            root->eventName = temp->eventName;
+
+            root->right = removeNode(root->right, temp->year);
+        }
+        return root;
+    }
+
+    void inOrder(Node* node) const {
+        if (node != nullptr) {
+            inOrder(node->left);
+            cout << node->year << ": " << node->eventName << endl;
+            inOrder(node->right);
+        }
+    }
+
+    void cleanup(Node* node) {
+        if (node != nullptr) {
+            cleanup(node->left);
+            cleanup(node->right);
+            delete node;
+        }
+    }
+
+    int findMinYear() const {
+        if (root == nullptr) return numeric_limits<int>::max();
+        Node* current = root;
+        while (current->left != nullptr) {
+            current = current->left;
+        }
+        return current->year;
+    }
+
+    int findMaxYear() const {
+        if (root == nullptr) return numeric_limits<int>::min();
+        Node* current = root;
+        while (current->right != nullptr) {
+            current = current->right;
+        }
+        return current->year;
+    }
+
+public:
+    TimelineBST() : root(nullptr) {}
+
+    ~TimelineBST() {
+        cleanup(root);
+    }
+
+    void inject(int year, const string& name) {
+        root = insert(root, year, name);
+    }
+
+    void paradox(int year) {
+        cout << "\n\n> Alert: Paradox detected at " << year << "!" << endl;
+        root = removeNode(root, year);
+        if (searchHelper(root, year) == nullptr) {
+            cout << "> System: Year " << year << " removed. Timeline stabilized." << endl;
+        }
+    }
+
+    string search(int year) const {
+        cout << "\n\n> Query: Searching for " << year << "..." << endl;
+        Node* result = searchHelper(root, year);
+        if (result != nullptr) {
+            return "> Result: Event Found! [" + to_string(result->year) + ": " + result->eventName + "]";
+        } else {
+            return "> Result: Year " + to_string(year) + " not found in current timeline.\n";
+        }
+    }
+
+    void report() const {
+        cout << "\n> COMMAND: CHRONOLOGICAL REPORT" << endl;
+        cout << "-------------------------------" << endl;
+        inOrder(root);
+        cout << "-------------------------------" << endl;
+    }
+
+    int calculateTimeSpan() const {
+        if (root == nullptr) {
+            cout << "\n> TIME SPAN CALCULATOR: Timeline is empty." << endl;
+            return 0;
+        }
+
+        int minYear = findMinYear();
+        int maxYear = findMaxYear();
+
+        cout << "\n> TIME SPAN CALCULATOR:" << endl;
+        cout << "  Earliest Event: " << minYear << endl;
+        cout << "  Latest Event:   " << maxYear << endl;
+        int span = maxYear - minYear;
+        cout << "  Total Span:     " << span << " Years." << endl;
+        return span;
+    }
+};
+
+int main() {
+    TimelineBST timeline;
+
+    cout << "--- Time-Stream Stabilizer Initializing ---" << endl;
+
+    timeline.inject(2050, "Mars Colony Established");
+    timeline.inject(1969, "Moon Landing");
+    timeline.inject(2100, "Warp Drive Invented");
+    timeline.inject(2000, "Y2K Bug");
+
+    cout << timeline.search(1969) << endl;
+
+    timeline.inject(1990, "World Wide Web");
+
+    timeline.paradox(2000);
+
+    timeline.report();
+
+    cout << timeline.search(2000) << endl;
+
+    timeline.calculateTimeSpan();
+
+    cout << "\n--- Stabilization Sequence Complete ---" << endl;
+    return 0;
+}
